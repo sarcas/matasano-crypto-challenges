@@ -1,18 +1,20 @@
-require_relative 'challenge2'
+require_relative "byte_array.rb"
+require_relative "string_metrics.rb"
 
-crypted = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+# build a ByteArray for the encrypted buffer
+crypted_buffer = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+crypted_byte_array = ByteArray.from_hex_buffer(crypted_buffer)
 
-bytes = hex_string_to_byte_array(crypted)
+# try to XOR crypted_byte_array against ASCII characters
+# this is probably not a complete set of characters...
+trial_strings = (1..255).to_a.map do |key|
+  StringMetrics.for(crypted_byte_array.xor_against(key))
+end
 
-CharacterPair = Struct.new(:byte, :count)
+# apply a cut based selection to find plausibly human readable strings
+trial_strings.select! { |string| string.preselected? }
 
-def most_frequent_characters(bytes)
-  hist = Hash.new(0).tap { |result| bytes.each { |byte| result[byte] += 1 }}
-
-  array_of_character_pairs = [].tap do |result|
-    hist.each_key { |key| result << CharacterPair.new(key, hist[key]) }
-  end
-
-  array_of_character_pairs.sort { |e| e.count }
+trial_strings.sort { |x, y| x.chi2 <=> y.chi2 }.shift(5).each do |candidate|
+  puts "#{candidate.string}: #{candidate.chi2}"
 end
 

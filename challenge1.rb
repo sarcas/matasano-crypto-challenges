@@ -1,13 +1,9 @@
-require "base64"
+require_relative "byte_array.rb"
 
-def hex_string_to_byte_array(hex_string)
-  hex_string.scan(/../).map {|byte| byte.hex}
-end
+buffer = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+byte_array = ByteArray.from_hex_buffer(buffer)
 
-def byte_array_to_base64(bytes)
-  Base64.strict_encode64(bytes.map {|byte| byte.chr}.join)
-end
+puts byte_array.raw_array.join(",")
+puts byte_array.to_s
+puts byte_array.to_base64
 
-#bytes = hex_string_to_byte_array("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
-#puts byte_array_to_base64(bytes)
-#"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t" #base64
