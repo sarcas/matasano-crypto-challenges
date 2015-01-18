@@ -7,12 +7,14 @@ crypted_byte_array = ByteArray.from_hex_buffer(crypted_buffer)
 
 # try to XOR crypted_byte_array against ASCII characters
 # this is probably not a complete set of characters...
-trials = (1..255).to_a.map do |key|
-  crypted_byte_array.xor_against(key)
+trial_strings = (1..255).to_a.map do |key|
+  StringMetrics.for(crypted_byte_array.xor_against(key))
 end
 
 # apply a cut based selection to find plausibly human readable strings
-trials.select { |trial| StringMetrics.for(trial).cuts_pass? }.each do |trial|
-  puts "#{trial.to_s}: [#{StringMetrics.for(trial).to_s}]"
+trial_strings.select! { |string| string.preselected? }
+
+trial_strings.sort { |x, y| x.chi2 <=> y.chi2 }.shift(5).each do |candidate|
+  puts "#{candidate.string}: #{candidate.chi2}"
 end
 
