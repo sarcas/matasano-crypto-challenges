@@ -51,11 +51,7 @@ class ByteArray
   #
   # Returns ByteArray
   def ^(rhs)
-    res = [].tap do |result|
-      self.raw_array.each_with_index do |byte, i|
-        result << (byte ^ rhs.raw_array[i])
-      end
-    end
+    res = self.raw_array.each_with_index.map { |byte, i| byte ^ rhs.raw_array[i] }
 
     ByteArray.new(res)
   end
@@ -66,7 +62,9 @@ class ByteArray
   #
   # Returns ByteArray
   def xor_against(key)
-    ByteArray.new(self.raw_array.map { |byte| byte ^ key })
+    res = self.raw_array.map { |byte| byte ^ key }
+
+    ByteArray.new(res)
   end
 end
 
